@@ -42,19 +42,21 @@
 //! {"jsonrpc": "2.0", "method": "exit", "params": null}
 //! ```
 use std::error::Error;
+use std::io::BufRead;
 
-use lsp_types::OneOf;
 use lsp_types::{
-    request::Completion, request::GotoDefinition, request::Request as RequestTrait,
-    CompletionResponse, GotoDefinitionResponse, InitializeParams, ServerCapabilities,
-    TextDocumentSyncCapability, TextDocumentSyncKind,
+    request::Completion, request::GotoDefinition, request::HoverRequest,
+    request::Request as RequestTrait, CompletionResponse, GotoDefinitionResponse, Hover,
+    HoverProviderCapability, InitializeParams, ServerCapabilities, TextDocumentSyncCapability,
+    TextDocumentSyncKind,
 };
+use lsp_types::{OneOf, Url};
 
 use lsp_server::{Connection, ExtractError, Message, Request, RequestId, Response};
 
 fn main() -> Result<(), Box<dyn Error + Sync + Send>> {
     // Note that  we must have our logging only write out to stderr.
-    eprintln!("starting ghostty LSP server");
+    eprintln!("Starting server");
 
     // Create the transport. Includes the stdio (stdin and stdout) versions but this could
     // also be implemented to use sockets or HTTP.
@@ -71,21 +73,38 @@ fn main() -> Result<(), Box<dyn Error + Sync + Send>> {
             all_commit_characters: None,
             completion_item: None,
         }),
+        hover_provider: Some(HoverProviderCapability::Simple(true)),
         ..Default::default()
     })
     .unwrap();
+    eprintln!("Sending server capabilities: {server_capabilities:?}");
     let initialization_params = connection.initialize(server_capabilities)?;
     main_loop(connection, initialization_params)?;
     io_threads.join()?;
 
     // Shut down gracefully.
-    eprintln!("shutting down server");
+    eprintln!("Shutting down server");
     Ok(())
 }
 
-fn handle_request(req: Request) {
+fn get_config_param_description(param_name: &str) -> String {
+    match param_name {
+        "selection-foreground" | "selection-background" => {
+            "The foreground and background color for selection. If this is not
+set, then the selection color is just the inverted window background
+and foreground (note: not to be confused with the cell bg/fg).
+"
+            .to_string()
+        }
+
+        _ => "No description found".to_string(),
+    }
+}
+
+fn handle_request(req: Request) -> Option<Response> {
     match req.method.as_str() {
         Completion::METHOD => {
+            eprintln!("Got completion request");
             let (id, params) = cast::<Completion>(req).unwrap();
             let result = Some(CompletionResponse::Array(Vec::new()));
             let result = serde_json::to_value(&result).unwrap();
@@ -94,8 +113,10 @@ fn handle_request(req: Request) {
                 result: Some(result),
                 error: None,
             };
+            Some(resp)
         }
         GotoDefinition::METHOD => {
+            eprintln!("Got gotoDefinition request");
             let (id, params) = cast::<GotoDefinition>(req).unwrap();
             let result = Some(GotoDefinitionResponse::Array(Vec::new()));
             let result = serde_json::to_value(&result).unwrap();
@@ -104,8 +125,54 @@ fn handle_request(req: Request) {
                 result: Some(result),
                 error: None,
             };
+            Some(resp)
         }
-        _ => {}
+        HoverRequest::METHOD => {
+            eprintln!("Got hover request");
+            let (id, params) = cast::<HoverRequest>(req).unwrap();
+            // read the file at params.text_document_position_params.text_document.uri
+            // and return the contents as a hover
+            let uri = params.text_document_position_params.text_document.uri;
+            let file = std::fs::File::open(uri.path()).unwrap();
+            let buf_reader = std::io::BufReader::new(file);
+            let hover_line = params.text_document_position_params.position.line;
+
+            let mut hover_contents: Option<String> = None;
+            let mut line_num = 0;
+            for line in buf_reader.lines() {
+                if line_num == hover_line {
+                    let line_contents = line.unwrap();
+                    if let Some(has_equal) = line_contents.find("=") {
+                        let param_name = line_contents.split("=").next().unwrap().trim();
+                        eprintln!("Found param name: {:?}", param_name);
+                        let param_desc = get_config_param_description(param_name);
+                        hover_contents = Some(param_desc)
+                    }
+                    // eprintln!("Found line: {:?}", line.unwrap());
+                }
+                line_num += 1;
+            }
+
+            let cont = match hover_contents {
+                Some(val) => val,
+                None => "No hover contents found".to_string(),
+            };
+            let hover = Hover {
+                contents: lsp_types::HoverContents::Scalar(lsp_types::MarkedString::String(
+                    cont.to_string(),
+                )),
+                range: None,
+            };
+            let result = serde_json::to_value(&hover).unwrap();
+            eprintln!("Sending hover response: {result:?}");
+            let resp = Response {
+                id,
+                result: Some(result),
+                error: None,
+            };
+            Some(resp)
+        }
+        _ => None,
     }
 }
 
@@ -114,31 +181,35 @@ fn main_loop(
     params: serde_json::Value,
 ) -> Result<(), Box<dyn Error + Sync + Send>> {
     let _params: InitializeParams = serde_json::from_value(params).unwrap();
-    eprintln!("starting ghostty-lsp main loop");
+    eprintln!("Starting main loop");
+    // eprintln!("Got initialize params: {params:?}");
     for msg in &connection.receiver {
-        eprintln!("got msg: {msg:?}");
+        eprintln!("Got msg: {msg:?}");
         match msg {
             Message::Request(req) => {
                 if connection.handle_shutdown(&req)? {
                     return Ok(());
                 }
-                eprintln!("got request: {req:?}");
-                match cast::<GotoDefinition>(req) {
-                    Ok((id, params)) => {
-                        eprintln!("got gotoDefinition request #{id}: {params:?}");
-                        let result = Some(GotoDefinitionResponse::Array(Vec::new()));
-                        let result = serde_json::to_value(&result).unwrap();
-                        let resp = Response {
-                            id,
-                            result: Some(result),
-                            error: None,
-                        };
-                        connection.sender.send(Message::Response(resp))?;
-                        continue;
-                    }
-                    Err(err @ ExtractError::JsonError { .. }) => panic!("{err:?}"),
-                    Err(ExtractError::MethodMismatch(req)) => req,
-                };
+                eprintln!("Got request: {req:?}");
+                if let Some(res) = handle_request(req) {
+                    connection.sender.send(Message::Response(res))?;
+                }
+                // match cast::<GotoDefinition>(req) {
+                //     Ok((id, params)) => {
+                //         eprintln!("Got gotoDefinition request #{id}: {params:?}");
+                //         let result = Some(GotoDefinitionResponse::Array(Vec::new()));
+                //         let result = serde_json::to_value(&result).unwrap();
+                //         let resp = Response {
+                //             id,
+                //             result: Some(result),
+                //             error: None,
+                //         };
+                //         connection.sender.send(Message::Response(resp))?;
+                //         continue;
+                //     }
+                //     Err(err @ ExtractError::JsonError { .. }) => panic!("{err:?}"),
+                //     Err(ExtractError::MethodMismatch(req)) => req,
+                // };
                 // ...
             }
             Message::Response(resp) => {
