@@ -44,15 +44,16 @@
 use std::error::Error;
 use std::io::BufRead;
 
+use lsp_server::{Connection, ExtractError, Message, Notification, Request, RequestId, Response};
+use lsp_types::OneOf;
 use lsp_types::{
-    request::Completion, request::GotoDefinition, request::HoverRequest,
-    request::Request as RequestTrait, CompletionResponse, GotoDefinitionResponse, Hover,
-    HoverProviderCapability, InitializeParams, ServerCapabilities, TextDocumentSyncCapability,
-    TextDocumentSyncKind,
+    notification, notification::DidChangeTextDocument, notification::DidOpenTextDocument,
+    notification::Notification as NotificationTrait, request::Completion, request::HoverRequest,
+    request::Request as RequestTrait, CompletionResponse, Hover, HoverProviderCapability,
+    InitializeParams, ServerCapabilities, TextDocumentSyncCapability, TextDocumentSyncKind,
 };
-use lsp_types::{OneOf, Url};
 
-use lsp_server::{Connection, ExtractError, Message, Request, RequestId, Response};
+use ghostty_lsp::get_config_param_description;
 
 fn main() -> Result<(), Box<dyn Error + Sync + Send>> {
     // Note that  we must have our logging only write out to stderr.
@@ -87,38 +88,12 @@ fn main() -> Result<(), Box<dyn Error + Sync + Send>> {
     Ok(())
 }
 
-fn get_config_param_description(param_name: &str) -> String {
-    match param_name {
-        "selection-foreground" | "selection-background" => {
-            "The foreground and background color for selection. If this is not
-set, then the selection color is just the inverted window background
-and foreground (note: not to be confused with the cell bg/fg).
-"
-            .to_string()
-        }
-
-        _ => "No description found".to_string(),
-    }
-}
-
 fn handle_request(req: Request) -> Option<Response> {
     match req.method.as_str() {
         Completion::METHOD => {
             eprintln!("Got completion request");
-            let (id, params) = cast::<Completion>(req).unwrap();
+            let (id, _params) = cast_request::<Completion>(req).unwrap();
             let result = Some(CompletionResponse::Array(Vec::new()));
-            let result = serde_json::to_value(&result).unwrap();
-            let resp = Response {
-                id,
-                result: Some(result),
-                error: None,
-            };
-            Some(resp)
-        }
-        GotoDefinition::METHOD => {
-            eprintln!("Got gotoDefinition request");
-            let (id, params) = cast::<GotoDefinition>(req).unwrap();
-            let result = Some(GotoDefinitionResponse::Array(Vec::new()));
             let result = serde_json::to_value(&result).unwrap();
             let resp = Response {
                 id,
@@ -129,10 +104,11 @@ fn handle_request(req: Request) -> Option<Response> {
         }
         HoverRequest::METHOD => {
             eprintln!("Got hover request");
-            let (id, params) = cast::<HoverRequest>(req).unwrap();
+            let (id, params) = cast_request::<HoverRequest>(req).unwrap();
             // read the file at params.text_document_position_params.text_document.uri
             // and return the contents as a hover
             let uri = params.text_document_position_params.text_document.uri;
+            eprintln!("Got uri: {:?}", uri);
             let file = std::fs::File::open(uri.path()).unwrap();
             let buf_reader = std::io::BufReader::new(file);
             let hover_line = params.text_document_position_params.position.line;
@@ -142,7 +118,7 @@ fn handle_request(req: Request) -> Option<Response> {
             for line in buf_reader.lines() {
                 if line_num == hover_line {
                     let line_contents = line.unwrap();
-                    if let Some(has_equal) = line_contents.find("=") {
+                    if let Some(_) = line_contents.find("=") {
                         let param_name = line_contents.split("=").next().unwrap().trim();
                         eprintln!("Found param name: {:?}", param_name);
                         let param_desc = get_config_param_description(param_name);
@@ -176,13 +152,35 @@ fn handle_request(req: Request) -> Option<Response> {
     }
 }
 
+fn handle_notification(notif: Notification, doc: &mut String) {
+    match notif.method.as_str() {
+        DidOpenTextDocument::METHOD => {
+            eprintln!("Got DidOpenTextDocument notification");
+            let (_id, params) =
+                cast_notification::<notification::DidOpenTextDocument>(notif).unwrap();
+            *doc = params.text_document.text.clone();
+            eprintln!("Got text: {:?}", params.text_document.text.as_str());
+        }
+        DidChangeTextDocument::METHOD => {
+            eprintln!("Got DidChangeTextDocument notification");
+            let (_id, params) =
+                cast_notification::<notification::DidChangeTextDocument>(notif).unwrap();
+            params.content_changes.iter().for_each(|change| {
+                eprintln!("Got change: {change:?}");
+            });
+            eprintln!("Got params: {params:?}");
+        }
+        _ => {}
+    }
+}
+
 fn main_loop(
     connection: Connection,
     params: serde_json::Value,
 ) -> Result<(), Box<dyn Error + Sync + Send>> {
     let _params: InitializeParams = serde_json::from_value(params).unwrap();
+    let mut doc: String = String::new();
     eprintln!("Starting main loop");
-    // eprintln!("Got initialize params: {params:?}");
     for msg in &connection.receiver {
         eprintln!("Got msg: {msg:?}");
         match msg {
@@ -194,39 +192,31 @@ fn main_loop(
                 if let Some(res) = handle_request(req) {
                     connection.sender.send(Message::Response(res))?;
                 }
-                // match cast::<GotoDefinition>(req) {
-                //     Ok((id, params)) => {
-                //         eprintln!("Got gotoDefinition request #{id}: {params:?}");
-                //         let result = Some(GotoDefinitionResponse::Array(Vec::new()));
-                //         let result = serde_json::to_value(&result).unwrap();
-                //         let resp = Response {
-                //             id,
-                //             result: Some(result),
-                //             error: None,
-                //         };
-                //         connection.sender.send(Message::Response(resp))?;
-                //         continue;
-                //     }
-                //     Err(err @ ExtractError::JsonError { .. }) => panic!("{err:?}"),
-                //     Err(ExtractError::MethodMismatch(req)) => req,
-                // };
-                // ...
             }
             Message::Response(resp) => {
-                eprintln!("got response: {resp:?}");
+                eprintln!("Got response: {resp:?}");
             }
-            Message::Notification(not) => {
-                eprintln!("got notification: {not:?}");
+            Message::Notification(notif) => {
+                eprintln!("Got notification: {notif:?}");
+                handle_notification(notif, &mut doc);
             }
         }
     }
     Ok(())
 }
 
-fn cast<R>(req: Request) -> Result<(RequestId, R::Params), ExtractError<Request>>
+fn cast_request<R>(req: Request) -> Result<(RequestId, R::Params), ExtractError<Request>>
 where
     R: lsp_types::request::Request,
     R::Params: serde::de::DeserializeOwned,
 {
     req.extract(R::METHOD)
+}
+
+fn cast_notification<N>(notif: Notification) -> Result<((), N::Params), ExtractError<Notification>>
+where
+    N: lsp_types::notification::Notification,
+    N::Params: serde::de::DeserializeOwned,
+{
+    notif.extract(N::METHOD)
 }
