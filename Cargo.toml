@@ -2,6 +2,12 @@
 name = "ghostty-lsp"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
+description = "A language server for Ghostty configuration file"
+homepage = "https://github.com/matthewmturner/ghostty-lsp"
+repository = "https://github.com/matthewmturner/ghostty-lsp"
+authors = ["Matthew Turner"]
+keywords = ["ghostty", "lsp", "language server", "language server protocol"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
