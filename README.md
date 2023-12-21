@@ -12,7 +12,7 @@ Make sure the created binary is in your `$PATH`.
 
 ### Neovim
 
-Add the following LSP configuration to have the LSP only activate on the Ghostty config (this assumes you use default location for Ghostty config).
+Add the following LSP configuration to have the LSP only activate on the Ghostty config (this assumes you use default location for Ghostty config - if not update the normalized location to your needs).
 
 ```lua
 function setup_ghostty_lsp()
