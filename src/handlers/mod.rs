@@ -1,8 +1,10 @@
-// Purpose: Module for handling LSP messages
-use lsp_server::{ExtractError, Notification};
-use lsp_types::notification;
+use lsp_server::{ExtractError, Notification, Request, RequestId, Response};
 use lsp_types::notification::Notification as NotificationTrait;
 use lsp_types::notification::{DidChangeTextDocument, DidOpenTextDocument};
+use lsp_types::request::{Completion, HoverRequest, Request as RequestTrait};
+use lsp_types::{notification, CompletionResponse, Hover};
+
+use crate::definitions::get_config_param_description;
 
 fn cast_notification<N>(notif: Notification) -> Result<N::Params, ExtractError<Notification>>
 where
@@ -10,6 +12,14 @@ where
     N::Params: serde::de::DeserializeOwned,
 {
     notif.extract(N::METHOD)
+}
+
+fn cast_request<R>(req: Request) -> Result<(RequestId, R::Params), ExtractError<Request>>
+where
+    R: lsp_types::request::Request,
+    R::Params: serde::de::DeserializeOwned,
+{
+    req.extract(R::METHOD)
 }
 
 pub fn handle_notification(notif: Notification, doc: &mut String) {
@@ -35,6 +45,69 @@ pub fn handle_notification(notif: Notification, doc: &mut String) {
             eprintln!("Got params: {params:?}");
         }
         _ => {}
+    }
+}
+
+pub fn handle_request(req: Request, doc: &mut String) -> Option<Response> {
+    match req.method.as_str() {
+        Completion::METHOD => {
+            eprintln!("Got completion request");
+            let (id, _params) = cast_request::<Completion>(req).unwrap();
+            let result = Some(CompletionResponse::Array(Vec::new()));
+            let result = serde_json::to_value(result).unwrap();
+            let resp = Response {
+                id,
+                result: Some(result),
+                error: None,
+            };
+            Some(resp)
+        }
+        HoverRequest::METHOD => {
+            eprintln!("Got hover request");
+            let (id, params) = cast_request::<HoverRequest>(req).unwrap();
+            // read the file at params.text_document_position_params.text_document.uri
+            // and return the contents as a hover
+            let maybe_hover_line =
+                usize::try_from(params.text_document_position_params.position.line);
+
+            let hover_line = match maybe_hover_line {
+                Ok(val) => val,
+                Err(_) => {
+                    eprintln!("Failed to convert hover line to usize");
+                    return None;
+                }
+            };
+
+            let mut hover_contents: Option<String> = None;
+            for (line_num, line) in doc.lines().enumerate() {
+                if line_num == hover_line && line.find('=').is_some() {
+                    let param_name = line.split('=').next().unwrap().trim();
+                    eprintln!("Found param name: {:?}", param_name);
+                    let param_desc = get_config_param_description(param_name);
+                    hover_contents = Some(param_desc)
+                }
+            }
+
+            let cont = match hover_contents {
+                Some(val) => val,
+                None => "No hover contents found".to_string(),
+            };
+            let hover = Hover {
+                contents: lsp_types::HoverContents::Scalar(lsp_types::MarkedString::String(
+                    cont.to_string(),
+                )),
+                range: None,
+            };
+            let result = serde_json::to_value(hover).unwrap();
+            eprintln!("Sending hover response: {result:?}");
+            let resp = Response {
+                id,
+                result: Some(result),
+                error: None,
+            };
+            Some(resp)
+        }
+        _ => None,
     }
 }
 

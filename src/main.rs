@@ -43,16 +43,14 @@
 //! ```
 use std::error::Error;
 
-use lsp_server::{Connection, ExtractError, Message, Request, RequestId, Response};
+use lsp_server::{Connection, Message};
 use lsp_types::OneOf;
 use lsp_types::{
-    request::Completion, request::HoverRequest, request::Request as RequestTrait,
-    CompletionResponse, Hover, HoverProviderCapability, InitializeParams, ServerCapabilities,
-    TextDocumentSyncCapability, TextDocumentSyncKind,
+    HoverProviderCapability, InitializeParams, ServerCapabilities, TextDocumentSyncCapability,
+    TextDocumentSyncKind,
 };
 
-use ghostty_lsp::definitions::get_config_param_description;
-use ghostty_lsp::handlers::handle_notification;
+use ghostty_lsp::handlers::{handle_notification, handle_request};
 
 fn main() -> Result<(), Box<dyn Error + Sync + Send>> {
     // Note that  we must have our logging only write out to stderr.
@@ -63,7 +61,7 @@ fn main() -> Result<(), Box<dyn Error + Sync + Send>> {
     let (connection, io_threads) = Connection::stdio();
 
     // Run the server and wait for the two threads to end (typically by trigger LSP Exit event).
-    let server_capabilities = serde_json::to_value(&ServerCapabilities {
+    let server_capabilities = serde_json::to_value(ServerCapabilities {
         text_document_sync: Some(TextDocumentSyncCapability::Kind(TextDocumentSyncKind::FULL)),
         definition_provider: Some(OneOf::Left(true)),
         completion_provider: Some(lsp_types::CompletionOptions {
@@ -85,65 +83,6 @@ fn main() -> Result<(), Box<dyn Error + Sync + Send>> {
     // Shut down gracefully.
     eprintln!("Shutting down server");
     Ok(())
-}
-
-fn handle_request(req: Request, doc: &mut String) -> Option<Response> {
-    match req.method.as_str() {
-        Completion::METHOD => {
-            eprintln!("Got completion request");
-            let (id, _params) = cast_request::<Completion>(req).unwrap();
-            let result = Some(CompletionResponse::Array(Vec::new()));
-            let result = serde_json::to_value(&result).unwrap();
-            let resp = Response {
-                id,
-                result: Some(result),
-                error: None,
-            };
-            Some(resp)
-        }
-        HoverRequest::METHOD => {
-            eprintln!("Got hover request");
-            let (id, params) = cast_request::<HoverRequest>(req).unwrap();
-            // read the file at params.text_document_position_params.text_document.uri
-            // and return the contents as a hover
-            let hover_line = params.text_document_position_params.position.line;
-
-            let mut hover_contents: Option<String> = None;
-            let mut line_num = 0;
-            for line in doc.lines() {
-                if line_num == hover_line {
-                    if let Some(_) = line.find("=") {
-                        let param_name = line.split("=").next().unwrap().trim();
-                        eprintln!("Found param name: {:?}", param_name);
-                        let param_desc = get_config_param_description(param_name);
-                        hover_contents = Some(param_desc)
-                    }
-                    // eprintln!("Found line: {:?}", line.unwrap());
-                }
-                line_num += 1;
-            }
-
-            let cont = match hover_contents {
-                Some(val) => val,
-                None => "No hover contents found".to_string(),
-            };
-            let hover = Hover {
-                contents: lsp_types::HoverContents::Scalar(lsp_types::MarkedString::String(
-                    cont.to_string(),
-                )),
-                range: None,
-            };
-            let result = serde_json::to_value(&hover).unwrap();
-            eprintln!("Sending hover response: {result:?}");
-            let resp = Response {
-                id,
-                result: Some(result),
-                error: None,
-            };
-            Some(resp)
-        }
-        _ => None,
-    }
 }
 
 fn main_loop(
@@ -174,12 +113,4 @@ fn main_loop(
         }
     }
     Ok(())
-}
-
-fn cast_request<R>(req: Request) -> Result<(RequestId, R::Params), ExtractError<Request>>
-where
-    R: lsp_types::request::Request,
-    R::Params: serde::de::DeserializeOwned,
-{
-    req.extract(R::METHOD)
 }

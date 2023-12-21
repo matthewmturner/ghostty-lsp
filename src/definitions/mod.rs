@@ -254,37 +254,37 @@ program requests otherwise, set this to "never".
 "#.to_string()
         }
         "background-opacity" => {
-            r#"/// The opacity level (opposite of transparency) of the background.
-/// A value of 1 is fully opaque and a value of 0 is fully transparent.
-/// A value less than 0 or greater than 1 will be clamped to the nearest
-/// valid value.
-///
-/// Changing this value at runtime (and reloading config) will only
-/// affect new windows, tabs, and splits.
+            r#" The opacity level (opposite of transparency) of the background.
+ A value of 1 is fully opaque and a value of 0 is fully transparent.
+ A value less than 0 or greater than 1 will be clamped to the nearest
+ valid value.
+
+ Changing this value at runtime (and reloading config) will only
+ affect new windows, tabs, and splits.
 "#.to_string()
         }
         "background-blur-radius" => {
-            r#"/// A positive value enables blurring of the background when
-/// background-opacity is less than 1. The value is the blur radius to
-/// apply. A value of 20 is reasonable for a good looking blur.
-/// Higher values will cause strange rendering issues as well as
-/// performance issues.
-///
-/// This is only supported on macOS.
+            r#" A positive value enables blurring of the background when
+ background-opacity is less than 1. The value is the blur radius to
+ apply. A value of 20 is reasonable for a good looking blur.
+ Higher values will cause strange rendering issues as well as
+ performance issues.
+
+ This is only supported on macOS.
 :w
 "#.to_string()
         }
         "unfocused-split-opacity" => {
-            r#"/// The opacity level (opposite of transparency) of an unfocused split.
-/// Unfocused splits by default are slightly faded out to make it easier
-/// to see which split is focused. To disable this feature, set this
-/// value to 1.
-///
-/// A value of 1 is fully opaque and a value of 0 is fully transparent.
-/// Because "0" is not useful (it makes the window look very weird), the
-/// minimum value is 0.15. This value still looks weird but you can at least
-/// see what's going on. A value outside of the range 0.15 to 1 will be
-/// clamped to the nearest valid value.
+            r#" The opacity level (opposite of transparency) of an unfocused split.
+ Unfocused splits by default are slightly faded out to make it easier
+ to see which split is focused. To disable this feature, set this
+ value to 1.
+
+ A value of 1 is fully opaque and a value of 0 is fully transparent.
+ Because "0" is not useful (it makes the window look very weird), the
+ minimum value is 0.15. This value still looks weird but you can at least
+ see what's going on. A value outside of the range 0.15 to 1 will be
+ clamped to the nearest valid value.
 "#.to_string()
         }
         "unfocused-split-fill" => {
@@ -297,540 +297,540 @@ program requests otherwise, set this to "never".
 "# .to_string()
         }
         "command" => {
-            r#"/// The command to run, usually a shell. If this is not an absolute path,
-/// it'll be looked up in the PATH. If this is not set, a default will
-/// be looked up from your system. The rules for the default lookup are:
-///
-///   - SHELL environment variable
-///   - passwd entry (user information)
-///
-/// This can contain additional arguments to run the command with.
-/// If additional arguments are provided, the command will be executed
-/// using "/bin/sh -c". Ghostty does not do any shell command parsing.
-///
-/// If you're using the `ghostty` CLI there is also a shortcut
-/// to run a command with argumens directly: you can use the `-e`
-/// flag. For example: `ghostty -e fish --with --custom --args`.
+            r#" The command to run, usually a shell. If this is not an absolute path,
+ it'll be looked up in the PATH. If this is not set, a default will
+ be looked up from your system. The rules for the default lookup are:
+
+   - SHELL environment variable
+   - passwd entry (user information)
+
+ This can contain additional arguments to run the command with.
+ If additional arguments are provided, the command will be executed
+ using "/bin/sh -c". Ghostty does not do any shell command parsing.
+
+ If you're using the `ghostty` CLI there is also a shortcut
+ to run a command with argumens directly: you can use the `-e`
+ flag. For example: `ghostty -e fish --with --custom --args`.
 "#.to_string()
         }
         "link" => {
-            r#"/// Match a regular expression against the terminal text and associate
-/// clicking it with an action. This can be used to match URLs, file paths,
-/// etc. Actions can be opening using the system opener (i.e. "open" or
-/// "xdg-open") or executing any arbitrary binding action.
-///
-/// Links that are configured earlier take precedence over links that
-/// are configured later.
-///
-/// A default link that matches a URL and opens it in the system opener
-/// always exists. This can be disabled using "link-url".
-///
-/// TODO: This can't currently be set!
+            r#" Match a regular expression against the terminal text and associate
+ clicking it with an action. This can be used to match URLs, file paths,
+ etc. Actions can be opening using the system opener (i.e. "open" or
+ "xdg-open") or executing any arbitrary binding action.
+
+ Links that are configured earlier take precedence over links that
+ are configured later.
+
+ A default link that matches a URL and opens it in the system opener
+ always exists. This can be disabled using "link-url".
+
+ TODO: This can't currently be set!
 "#.to_string()
         }
         "link-url" => {
-            r#"/// Enable URL matching. URLs are matched on hover and open using the
-/// default system application for the linked URL.
-///
-/// The URL matcher is always lowest priority of any configured links
-/// (see "link"). If you want to customize URL matching, use "link"
-/// and disable this.
+            r#" Enable URL matching. URLs are matched on hover and open using the
+ default system application for the linked URL.
+
+ The URL matcher is always lowest priority of any configured links
+ (see "link"). If you want to customize URL matching, use "link"
+ and disable this.
 "#.to_string()
         }
         "fullscreen" => {
-            r#"/// Start new windows in fullscreen. This setting applies to new
-/// windows and does not apply to tabs, splits, etc. However, this
-/// setting will apply to all new windows, not just the first one.
-///
-/// On macOS, this always creates the window in native fullscreen.
-/// Non-native fullscreen is not currently supported with this
-/// setting.
+            r#" Start new windows in fullscreen. This setting applies to new
+ windows and does not apply to tabs, splits, etc. However, this
+ setting will apply to all new windows, not just the first one.
+
+ On macOS, this always creates the window in native fullscreen.
+ Non-native fullscreen is not currently supported with this
+ setting.
 "#.to_string()
         }
         "title" => {
-            r#"/// The title Ghostty will use for the window. This will force the title
-/// of the window to be this title at all times and Ghostty will ignore any
-/// set title escape sequences programs (such as Neovim) may send.
+            r#" The title Ghostty will use for the window. This will force the title
+ of the window to be this title at all times and Ghostty will ignore any
+ set title escape sequences programs (such as Neovim) may send.
 "#.to_string()
         }
         "class" => {
-            r#"/// The setting that will change the application class value.
-///
-/// This controls the class field of the WM_CLASS X11 property (when running
-/// under X11), and the Wayland application ID (when running under Wayland).
-///
-/// Note that changing this value between invocations will create new, separate
-/// instances, of Ghostty when running with --gtk-single-instance=true. See
-/// that option for more details.
-///
-/// The class name must follow the GTK requirements defined here:
-/// https://docs.gtk.org/gio/type_func.Application.id_is_valid.html
-///
-/// The default is "com.mitchellh.ghostty".
-///
-/// This only affects GTK builds.
+            r#" The setting that will change the application class value.
+
+ This controls the class field of the WM_CLASS X11 property (when running
+ under X11), and the Wayland application ID (when running under Wayland).
+
+ Note that changing this value between invocations will create new, separate
+ instances, of Ghostty when running with --gtk-single-instance=true. See
+ that option for more details.
+
+ The class name must follow the GTK requirements defined here:
+ https://docs.gtk.org/gio/type_func.Application.id_is_valid.html
+
+ The default is "com.mitchellh.ghostty".
+
+ This only affects GTK builds.
 "#.to_string()
         }
         "x11-instance-name" => {
-            r#"/// This controls the instance name field of the WM_CLASS X11 property when
-/// running under X11. It has no effect otherwise.
-///
-/// The default is "ghostty".
-///
-/// This only affects GTK builds.
+            r#" This controls the instance name field of the WM_CLASS X11 property when
+ running under X11. It has no effect otherwise.
+
+ The default is "ghostty".
+
+ This only affects GTK builds.
 "#.to_string()
         }
         "working-directory" => {
-            r#"/// The directory to change to after starting the command.
-///
-/// This setting is secondary to the "window-inherit-working-directory"
-/// setting. If a previous Ghostty terminal exists in the same process,
-/// "window-inherit-working-directory" will take precedence. Otherwise,
-/// this setting will be used. Typically, this setting is used only
-/// for the first window.
-///
-/// The default is "inherit" except in special scenarios listed next.
-/// On macOS, if Ghostty can detect it is launched from launchd
-/// (double-clicked) or `open`, then it defaults to "home".
-/// On Linux with GTK, if Ghostty can detect it was launched from
-/// a desktop launcher, then it defaults to "home".
-///
-/// The value of this must be an absolute value or one of the special
-/// values below:
-///
-///   - "home" - The home directory of the executing user.
-///   - "inherit" - The working directory of the launching process.
-///
+            r#" The directory to change to after starting the command.
+
+ This setting is secondary to the "window-inherit-working-directory"
+ setting. If a previous Ghostty terminal exists in the same process,
+ "window-inherit-working-directory" will take precedence. Otherwise,
+ this setting will be used. Typically, this setting is used only
+ for the first window.
+
+ The default is "inherit" except in special scenarios listed next.
+ On macOS, if Ghostty can detect it is launched from launchd
+ (double-clicked) or `open`, then it defaults to "home".
+ On Linux with GTK, if Ghostty can detect it was launched from
+ a desktop launcher, then it defaults to "home".
+
+ The value of this must be an absolute value or one of the special
+ values below:
+
+   - "home" - The home directory of the executing user.
+   - "inherit" - The working directory of the launching process.
+
 "#.to_string()
         }
         "keybind" => {
-            r#"/// Key bindings. The format is "trigger=action". Duplicate triggers
-/// will overwrite previously set values.
-///
-/// Trigger: "+"-separated list of keys and modifiers. Example:
-/// "ctrl+a", "ctrl+shift+b", "up". Some notes:
-///
-///   - modifiers cannot repeat, "ctrl+ctrl+a" is invalid.
-///   - modifiers and keys can be in any order, "shift+a+ctrl" is weird,
-///     but valid.
-///   - only a single key input is allowed, "ctrl+a+b" is invalid.
-///
-/// Valid modifiers are "shift", "ctrl" (alias: "control"),
-/// "alt" (alias: "opt", "option"), and "super" (alias: "cmd", "command").
-/// You may use the modifier or the alias. When debugging keybinds,
-/// the non-aliased modifier will always be used in output.
-///
-/// Action is the action to take when the trigger is satisfied. It takes
-/// the format "action" or "action:param". The latter form is only valid
-/// if the action requires a parameter.
-///
-///   - "ignore" - Do nothing, ignore the key input. This can be used to
-///     black hole certain inputs to have no effect.
-///   - "unbind" - Remove the binding. This makes it so the previous action
-///     is removed, and the key will be sent through to the child command
-///     if it is printable.
-///   - "csi:text" - Send a CSI sequence. i.e. "csi:A" sends "cursor up".
-///   - "esc:text" - Send an Escape sequence. i.e. "esc:d" deletes to the
-///     end of the word to the right.
-///
-/// Some notes for the action:
-///
-///   - The parameter is taken as-is after the ":". Double quotes or
-///     other mechanisms are included and NOT parsed. If you want to
-///     send a string value that includes spaces, wrap the entire
-///     trigger/action in double quotes. Example: --keybind="up=csi:A B"
-///
-/// There are some additional special values that can be specified for
-/// keybind:
-///
-///   - `keybind = clear` will clear all set keybindings. Warning: this
-///     removes ALL keybindings up to this point, including the default
-///     keybindings.
-///
+            r#" Key bindings. The format is "trigger=action". Duplicate triggers
+ will overwrite previously set values.
+
+ Trigger: "+"-separated list of keys and modifiers. Example:
+ "ctrl+a", "ctrl+shift+b", "up". Some notes:
+
+   - modifiers cannot repeat, "ctrl+ctrl+a" is invalid.
+   - modifiers and keys can be in any order, "shift+a+ctrl" is weird,
+     but valid.
+   - only a single key input is allowed, "ctrl+a+b" is invalid.
+
+ Valid modifiers are "shift", "ctrl" (alias: "control"),
+ "alt" (alias: "opt", "option"), and "super" (alias: "cmd", "command").
+ You may use the modifier or the alias. When debugging keybinds,
+ the non-aliased modifier will always be used in output.
+
+ Action is the action to take when the trigger is satisfied. It takes
+ the format "action" or "action:param". The latter form is only valid
+ if the action requires a parameter.
+
+   - "ignore" - Do nothing, ignore the key input. This can be used to
+     black hole certain inputs to have no effect.
+   - "unbind" - Remove the binding. This makes it so the previous action
+     is removed, and the key will be sent through to the child command
+     if it is printable.
+   - "csi:text" - Send a CSI sequence. i.e. "csi:A" sends "cursor up".
+   - "esc:text" - Send an Escape sequence. i.e. "esc:d" deletes to the
+     end of the word to the right.
+
+ Some notes for the action:
+
+   - The parameter is taken as-is after the ":". Double quotes or
+     other mechanisms are included and NOT parsed. If you want to
+     send a string value that includes spaces, wrap the entire
+     trigger/action in double quotes. Example: --keybind="up=csi:A B"
+
+ There are some additional special values that can be specified for
+ keybind:
+
+   - `keybind = clear` will clear all set keybindings. Warning: this
+     removes ALL keybindings up to this point, including the default
+     keybindings.
+
 "#.to_string()
         }
         "window-padding-x" => {
-            r#"/// Window padding. This applies padding between the terminal cells and
-/// the window border. The "x" option applies to the left and right
-/// padding and the "y" option is top and bottom. The value is in points,
-/// meaning that it will be scaled appropriately for screen DPI.
-///
-/// If this value is set too large, the screen will render nothing, because
-/// the grid will be completely squished by the padding. It is up to you
-/// as the user to pick a reasonable value. If you pick an unreasonable
-/// value, a warning will appear in the logs.
+            r#" Window padding. This applies padding between the terminal cells and
+ the window border. The "x" option applies to the left and right
+ padding and the "y" option is top and bottom. The value is in points,
+ meaning that it will be scaled appropriately for screen DPI.
+
+ If this value is set too large, the screen will render nothing, because
+ the grid will be completely squished by the padding. It is up to you
+ as the user to pick a reasonable value. If you pick an unreasonable
+ value, a warning will appear in the logs.
 "#.to_string()
         }
         "window-padding-y" => {
-            r#"/// Window padding. This applies padding between the terminal cells and
-/// the window border. The "x" option applies to the left and right
-/// padding and the "y" option is top and bottom. The value is in points,
-/// meaning that it will be scaled appropriately for screen DPI.
-///
-/// If this value is set too large, the screen will render nothing, because
-/// the grid will be completely squished by the padding. It is up to you
-/// as the user to pick a reasonable value. If you pick an unreasonable
-/// value, a warning will appear in the logs.
+            r#" Window padding. This applies padding between the terminal cells and
+ the window border. The "x" option applies to the left and right
+ padding and the "y" option is top and bottom. The value is in points,
+ meaning that it will be scaled appropriately for screen DPI.
+
+ If this value is set too large, the screen will render nothing, because
+ the grid will be completely squished by the padding. It is up to you
+ as the user to pick a reasonable value. If you pick an unreasonable
+ value, a warning will appear in the logs.
 "#.to_string()
         }
         "window-padding-balance" => {
-            r#"/// The viewport dimensions are usually not perfectly divisible by
-/// the cell size. In this case, some extra padding on the end of a
-/// column and the bottom of the final row may exist. If this is true,
-/// then this extra padding is automatically balanced between all four
-/// edges to minimize imbalance on one side. If this is false, the top
-/// left grid cell will always hug the edge with zero padding other than
-/// what may be specified with the other "window-padding" options.
-///
-/// If other "window-padding" fields are set and this is true, this will
-/// still apply. The other padding is applied first and may affect how
-/// many grid cells actually exist, and this is applied last in order
-/// to balance the padding given a certain viewport size and grid cell size.
+            r#" The viewport dimensions are usually not perfectly divisible by
+ the cell size. In this case, some extra padding on the end of a
+ column and the bottom of the final row may exist. If this is true,
+ then this extra padding is automatically balanced between all four
+ edges to minimize imbalance on one side. If this is false, the top
+ left grid cell will always hug the edge with zero padding other than
+ what may be specified with the other "window-padding" options.
+
+ If other "window-padding" fields are set and this is true, this will
+ still apply. The other padding is applied first and may affect how
+ many grid cells actually exist, and this is applied last in order
+ to balance the padding given a certain viewport size and grid cell size.
 "#.to_string()
         }
         "window-inherit-working-directory" => {
-            r#"/// If true, new windows and tabs will inherit the working directory of
-/// the previously focused window. If no window was previously focused,
-/// the default working directory will be used (the "working-directory"
-/// option)."#.to_string()
+            r#" If true, new windows and tabs will inherit the working directory of
+ the previously focused window. If no window was previously focused,
+ the default working directory will be used (the "working-directory"
+ option)."#.to_string()
         }
         "window-inherit-font-size" => {
-            r#"/// If true, new windows and tabs will inherit the font size of the previously
-/// focused window. If no window was previously focused, the default
-/// font size will be used. If this is false, the default font size
-/// specified in the configuration "font-size" will be used.
+            r#" If true, new windows and tabs will inherit the font size of the previously
+ focused window. If no window was previously focused, the default
+ font size will be used. If this is false, the default font size
+ specified in the configuration "font-size" will be used.
 "#.to_string()
         }
         "window-decoration" => {
-            r#"/// If false, windows won't have native decorations, i.e. titlebar and
-/// borders.
+            r#" If false, windows won't have native decorations, i.e. titlebar and
+ borders.
 "#.to_string()
         }
         "window-theme" => {
-            r#"/// The theme to use for the windows. The default is "system" which
-/// means that whatever the system theme is will be used. This can
-/// also be set to "light" or "dark" to force a specific theme regardless
-/// of the system settings.
-///
-/// This is currently only supported on macOS and linux.
+            r#" The theme to use for the windows. The default is "system" which
+ means that whatever the system theme is will be used. This can
+ also be set to "light" or "dark" to force a specific theme regardless
+ of the system settings.
+
+ This is currently only supported on macOS and linux.
 "#.to_string()
         }
         "window-height" => {
-            r#"/// The initial window size. This size is in terminal grid cells by default.
-///
-/// We don't currently support specifying a size in pixels but a future
-/// change can enable that. If this isn't specified, the app runtime will
-/// determine some default size.
-///
-/// Note that the window manager may put limits on the size or override
-/// the size. For example, a tiling window manager may force the window
-/// to be a certain size to fit within the grid. There is nothing Ghostty
-/// will do about this, but it will make an effort.
-///
-/// This will not affect new tabs, splits, or other nested terminal
-/// elements. This only affects the initial window size of any new window.
-/// Changing this value will not affect the size of the window after
-/// it has been created. This is only used for the initial size.
-///
-/// BUG: On Linux with GTK, the calculated window size will not properly
-/// take into account window decorations. As a result, the grid dimensions
-/// will not exactly match this configuration. If window decorations are
-/// disabled (see window-decorations), then this will work as expected.
-///
-/// Windows smaller than 10 wide by 4 high are not allowed.
+            r#" The initial window size. This size is in terminal grid cells by default.
+
+ We don't currently support specifying a size in pixels but a future
+ change can enable that. If this isn't specified, the app runtime will
+ determine some default size.
+
+ Note that the window manager may put limits on the size or override
+ the size. For example, a tiling window manager may force the window
+ to be a certain size to fit within the grid. There is nothing Ghostty
+ will do about this, but it will make an effort.
+
+ This will not affect new tabs, splits, or other nested terminal
+ elements. This only affects the initial window size of any new window.
+ Changing this value will not affect the size of the window after
+ it has been created. This is only used for the initial size.
+
+ BUG: On Linux with GTK, the calculated window size will not properly
+ take into account window decorations. As a result, the grid dimensions
+ will not exactly match this configuration. If window decorations are
+ disabled (see window-decorations), then this will work as expected.
+
+ Windows smaller than 10 wide by 4 high are not allowed.
 "#.to_string() 
         }
         "window-width" => {
-            r#"/// The initial window size. This size is in terminal grid cells by default.
-///
-/// We don't currently support specifying a size in pixels but a future
-/// change can enable that. If this isn't specified, the app runtime will
-/// determine some default size.
-///
-/// Note that the window manager may put limits on the size or override
-/// the size. For example, a tiling window manager may force the window
-/// to be a certain size to fit within the grid. There is nothing Ghostty
-/// will do about this, but it will make an effort.
-///
-/// This will not affect new tabs, splits, or other nested terminal
-/// elements. This only affects the initial window size of any new window.
-/// Changing this value will not affect the size of the window after
-/// it has been created. This is only used for the initial size.
-///
-/// BUG: On Linux with GTK, the calculated window size will not properly
-/// take into account window decorations. As a result, the grid dimensions
-/// will not exactly match this configuration. If window decorations are
-/// disabled (see window-decorations), then this will work as expected.
-///
-/// Windows smaller than 10 wide by 4 high are not allowed.
+            r#" The initial window size. This size is in terminal grid cells by default.
+
+ We don't currently support specifying a size in pixels but a future
+ change can enable that. If this isn't specified, the app runtime will
+ determine some default size.
+
+ Note that the window manager may put limits on the size or override
+ the size. For example, a tiling window manager may force the window
+ to be a certain size to fit within the grid. There is nothing Ghostty
+ will do about this, but it will make an effort.
+
+ This will not affect new tabs, splits, or other nested terminal
+ elements. This only affects the initial window size of any new window.
+ Changing this value will not affect the size of the window after
+ it has been created. This is only used for the initial size.
+
+ BUG: On Linux with GTK, the calculated window size will not properly
+ take into account window decorations. As a result, the grid dimensions
+ will not exactly match this configuration. If window decorations are
+ disabled (see window-decorations), then this will work as expected.
+
+ Windows smaller than 10 wide by 4 high are not allowed.
 "#.to_string()
         }
         "window-step-resize" => {
-            r#"/// Resize the window in discrete increments of the focused surface's
-/// cell size. If this is disabled, surfaces are resized in pixel increments.
-/// Currently only supported on macOS.
+            r#" Resize the window in discrete increments of the focused surface's
+ cell size. If this is disabled, surfaces are resized in pixel increments.
+ Currently only supported on macOS.
 "#.to_string()
         }
         "gtk-titlebar" => {
-            r#"/// When enabled, the full GTK titlebar is displayed instead of your window
-/// manager's simple titlebar. The behavior of this option will vary with your
-/// window manager.
-///
-/// This option does nothing when window-decoration is false or when running
-/// under MacOS.
-///
-/// Changing this value at runtime and reloading the configuration will only
-/// affect new windows.
+            r#" When enabled, the full GTK titlebar is displayed instead of your window
+ manager's simple titlebar. The behavior of this option will vary with your
+ window manager.
+
+ This option does nothing when window-decoration is false or when running
+ under MacOS.
+
+ Changing this value at runtime and reloading the configuration will only
+ affect new windows.
 "#.to_string()
         }
         "clipboard-read" | "clipboard-write" => {
-            r#"/// Whether to allow programs running in the terminal to read/write to
-/// the system clipboard (OSC 52, for googling). The default is to
-/// allow clipboard reading after prompting the user and allow writing
-/// unconditionally.
+            r#" Whether to allow programs running in the terminal to read/write to
+ the system clipboard (OSC 52, for googling). The default is to
+ allow clipboard reading after prompting the user and allow writing
+ unconditionally.
 "#.to_string()
         }
         "clipboard-trim-trailing-spaces" => {
-            r#"/// Trims trailing whitespace on data that is copied to the clipboard.
-/// This does not affect data sent to the clipboard via "clipboard-write".
+            r#" Trims trailing whitespace on data that is copied to the clipboard.
+ This does not affect data sent to the clipboard via "clipboard-write".
 "#.to_string()
         }
         "clipboard-paste-protection" => {
-            r#"/// Require confirmation before pasting text that appears unsafe. This helps
-/// prevent a "copy/paste attack" where a user may accidentally execute unsafe
-/// commands by pasting text with newlines.
+            r#" Require confirmation before pasting text that appears unsafe. This helps
+ prevent a "copy/paste attack" where a user may accidentally execute unsafe
+ commands by pasting text with newlines.
 "#.to_string()
         }
         "clipboard-paste-bracketed-safe" => {
-            r#"/// If true, bracketed pastes will be considered safe. By default,
-/// bracketed pastes are considered safe. "Bracketed" pastes are pastes
-/// while the running program has bracketed paste mode enabled (a setting
-/// set by the running program, not the terminal emulator).
+            r#" If true, bracketed pastes will be considered safe. By default,
+ bracketed pastes are considered safe. "Bracketed" pastes are pastes
+ while the running program has bracketed paste mode enabled (a setting
+ set by the running program, not the terminal emulator).
 "#.to_string()
         }
         "image-storage-limit" => {
-            r#"/// The total amount of bytes that can be used for image data (i.e.
-/// the Kitty image protocol) per terminal scren. The maximum value
-/// is 4,294,967,295 (4GB). The default is 320MB. If this is set to zero,
-/// then all image protocols will be disabled.
-///
-/// This value is separate for primary and alternate screens so the
-/// effective limit per surface is double.
+            r#" The total amount of bytes that can be used for image data (i.e.
+ the Kitty image protocol) per terminal scren. The maximum value
+ is 4,294,967,295 (4GB). The default is 320MB. If this is set to zero,
+ then all image protocols will be disabled.
+
+ This value is separate for primary and alternate screens so the
+ effective limit per surface is double.
 "#.to_string()
         }
         "copy-on-select" => {
-            r#"/// Whether to automatically copy selected text to the clipboard. "true"
-/// will only copy on systems that support a selection clipboard.
-///
-/// The value "clipboard" will copy to the system clipboard, making this
-/// work on macOS. Note that middle-click will also paste from the system
-/// clipboard in this case.
-///
-/// Note that if this is disabled, middle-click paste will also be
-/// disabled.
+            r#" Whether to automatically copy selected text to the clipboard. "true"
+ will only copy on systems that support a selection clipboard.
+
+ The value "clipboard" will copy to the system clipboard, making this
+ work on macOS. Note that middle-click will also paste from the system
+ clipboard in this case.
+
+ Note that if this is disabled, middle-click paste will also be
+ disabled.
 "#.to_string()
         }
         "click-repeat-interval" => {
-            r#"/// The time in milliseconds between clicks to consider a click a repeat
-/// (double, triple, etc.) or an entirely new single click. A value of
-/// zero will use a platform-specific default. The default on macOS
-/// is determined by the OS settings. On every other platform it is 500ms.
+            r#" The time in milliseconds between clicks to consider a click a repeat
+ (double, triple, etc.) or an entirely new single click. A value of
+ zero will use a platform-specific default. The default on macOS
+ is determined by the OS settings. On every other platform it is 500ms.
 "#.to_string()
         }
         "config-file" => {
-            r#"/// Additional configuration files to read. This configuration can be repeated
-/// to read multiple configuration files. Configuration files themselves can
-/// load more configuration files. Paths are relative to the file containing
-/// the `config-file` directive. For command-line arguments, paths are
-/// relative to the current working directory.
-///
-/// Cycles are not allowed. If a cycle is detected, an error will be logged
-/// and the configuration file will be ignored.
+            r#" Additional configuration files to read. This configuration can be repeated
+ to read multiple configuration files. Configuration files themselves can
+ load more configuration files. Paths are relative to the file containing
+ the `config-file` directive. For command-line arguments, paths are
+ relative to the current working directory.
+
+ Cycles are not allowed. If a cycle is detected, an error will be logged
+ and the configuration file will be ignored.
 "#.to_string()
         }
         "confirm-close-surface" => {
-            r#"/// Confirms that a surface should be closed before closing it. This defaults
-/// to true. If set to false, surfaces will close without any confirmation.
+            r#" Confirms that a surface should be closed before closing it. This defaults
+ to true. If set to false, surfaces will close without any confirmation.
 "#.to_string()
         }
         "quit-after-last-window-closed" => {
-            r#"/// Whether or not to quit after the last window is closed. This defaults
-/// to false. Currently only supported on macOS. On Linux, the process always
-/// exits after the last window is closed.
+            r#" Whether or not to quit after the last window is closed. This defaults
+ to false. Currently only supported on macOS. On Linux, the process always
+ exits after the last window is closed.
 "#.to_string()
         }
         "shell-integration" => {
-            r#"/// Whether to enable shell integration auto-injection or not. Shell
-/// integration greatly enhances the terminal experience by enabling
-/// a number of features:
-///
-///   * Working directory reporting so new tabs, splits inherit the
-///     previous terminal's working directory.
-///   * Prompt marking that enables the "jump_to_prompt" keybinding.
-///   * If you're sitting at a prompt, closing a terminal will not ask
-///     for confirmation.
-///   * Resizing the window with a complex prompt usually paints much
-///     better.
-///
-/// Allowable values are:
-///
-///   * "none" - Do not do any automatic injection. You can still manually
-///     configure your shell to enable the integration.
-///   * "detect" - Detect the shell based on the filename.
-///   * "fish", "zsh" - Use this specific shell injection scheme.
-///
-/// The default value is "detect".
+            r#" Whether to enable shell integration auto-injection or not. Shell
+ integration greatly enhances the terminal experience by enabling
+ a number of features:
+
+   * Working directory reporting so new tabs, splits inherit the
+     previous terminal's working directory.
+   * Prompt marking that enables the "jump_to_prompt" keybinding.
+   * If you're sitting at a prompt, closing a terminal will not ask
+     for confirmation.
+   * Resizing the window with a complex prompt usually paints much
+     better.
+
+ Allowable values are:
+
+   * "none" - Do not do any automatic injection. You can still manually
+     configure your shell to enable the integration.
+   * "detect" - Detect the shell based on the filename.
+   * "fish", "zsh" - Use this specific shell injection scheme.
+
+ The default value is "detect".
 "#.to_string()
         }
         "shell-integration-features" => {
-            r#"/// Shell integration features to enable if shell integration itself is enabled.
-/// The format of this is a list of features to enable separated by commas.
-/// If you prefix a feature with "no-" then it is disabled. If you omit
-/// a feature, its default value is used, so you must explicitly disable
-/// features you don't want.
-///
-/// Available features:
-///
-///   - "cursor" - Set the cursor to a blinking bar at the prompt.
-///
-/// Example: "cursor", "no-cursor""#.to_string()
+            r#" Shell integration features to enable if shell integration itself is enabled.
+ The format of this is a list of features to enable separated by commas.
+ If you prefix a feature with "no-" then it is disabled. If you omit
+ a feature, its default value is used, so you must explicitly disable
+ features you don't want.
+
+ Available features:
+
+   - "cursor" - Set the cursor to a blinking bar at the prompt.
+
+ Example: "cursor", "no-cursor""#.to_string()
         }
         "osc-color-report-format" => {
-            r#"/// Sets the reporting format for OSC sequences that request color information.
-/// Ghostty currently supports OSC 10 (foreground), OSC 11 (background), and OSC
-/// 4 (256 color palette) queries, and by default the reported values are
-/// scaled-up RGB values, where each component are 16 bits. This is how most
-/// terminals report these values. However, some legacy applications may require
-/// 8-bit, unscaled, components. We also support turning off reporting
-/// alltogether. The components are lowercase hex values.
-///
-/// Allowable values are:
-///
-///   * "none" - OSC 4/10/11 queries receive no reply
-///   * "8-bit" - Color components are return unscaled, i.e. rr/gg/bb
-///   * "16-bit" - Color components are returned scaled, e.g. rrrr/gggg/bbbb
-///
-/// The default value is "16-bit".
+            r#" Sets the reporting format for OSC sequences that request color information.
+ Ghostty currently supports OSC 10 (foreground), OSC 11 (background), and OSC
+ 4 (256 color palette) queries, and by default the reported values are
+ scaled-up RGB values, where each component are 16 bits. This is how most
+ terminals report these values. However, some legacy applications may require
+ 8-bit, unscaled, components. We also support turning off reporting
+ alltogether. The components are lowercase hex values.
+
+ Allowable values are:
+
+   * "none" - OSC 4/10/11 queries receive no reply
+   * "8-bit" - Color components are return unscaled, i.e. rr/gg/bb
+   * "16-bit" - Color components are returned scaled, e.g. rrrr/gggg/bbbb
+
+ The default value is "16-bit".
 "#.to_string()
         }
         "vt-kam-allowed" => {
-            r#"/// If true, allows the "KAM" mode (ANSI mode 2) to be used within
-/// the terminal. KAM disables keyboard input at the request of the
-/// application. This is not a common feature and is not recommended
-/// to be enabled. This will not be documented further because
-/// if you know you need KAM, you know. If you don't know if you
-/// need KAM, you don't need it.
+            r#" If true, allows the "KAM" mode (ANSI mode 2) to be used within
+ the terminal. KAM disables keyboard input at the request of the
+ application. This is not a common feature and is not recommended
+ to be enabled. This will not be documented further because
+ if you know you need KAM, you know. If you don't know if you
+ need KAM, you don't need it.
 "#.to_string()
         }
         "customer-shader" => {
-            r#"/// Custom shaders to run after the default shaders. This is a file path
-/// to a GLSL-syntax shader for all platforms.
-///
-/// WARNING: Invalid shaders can cause Ghostty to become unusable such as by
-/// causing the window to be completely black. If this happens, you can
-/// unset this configuration to disable the shader.
-///
-/// On Linux, this requires OpenGL 4.2. Ghostty typically only requires
-/// OpenGL 3.3, but custom shaders push that requirement up to 4.2.
-///
-/// The shader API is identical to the Shadertoy API: you specify a `mainImage`
-/// function and the available uniforms match Shadertoy. The iChannel0 uniform
-/// is a texture containing the rendered terminal screen.
-///
-/// If the shader fails to compile, the shader will be ignored. Any errors
-/// related to shader compilation will not show up as configuration errors
-/// and only show up in the log, since shader compilation happens after
-/// configuration loading on the dedicated render thread.  For interactive
-/// development, use Shadertoy.com.
-///
-/// This can be repeated multiple times to load multiple shaders. The shaders
-/// will be run in the order they are specified.
-///
-/// Changing this value at runtime and reloading the configuration will only
-/// affect new windows, tabs, and splits.
+            r#" Custom shaders to run after the default shaders. This is a file path
+ to a GLSL-syntax shader for all platforms.
+
+ WARNING: Invalid shaders can cause Ghostty to become unusable such as by
+ causing the window to be completely black. If this happens, you can
+ unset this configuration to disable the shader.
+
+ On Linux, this requires OpenGL 4.2. Ghostty typically only requires
+ OpenGL 3.3, but custom shaders push that requirement up to 4.2.
+
+ The shader API is identical to the Shadertoy API: you specify a `mainImage`
+ function and the available uniforms match Shadertoy. The iChannel0 uniform
+ is a texture containing the rendered terminal screen.
+
+ If the shader fails to compile, the shader will be ignored. Any errors
+ related to shader compilation will not show up as configuration errors
+ and only show up in the log, since shader compilation happens after
+ configuration loading on the dedicated render thread.  For interactive
+ development, use Shadertoy.com.
+
+ This can be repeated multiple times to load multiple shaders. The shaders
+ will be run in the order they are specified.
+
+ Changing this value at runtime and reloading the configuration will only
+ affect new windows, tabs, and splits.
 "#.to_string()
         }
         "customer-shader-animation" => {
-            r#"/// If true (default), the focused terminal surface will run an animation
-/// loop when custom shaders are used. This uses slightly more CPU (generally
-/// less than 10%) but allows the shader to animate. This only runs if there
-/// are custom shaders.
-///
-/// If this is set to false, the terminal and custom shader will only render
-/// when the terminal is updated. This is more efficient but the shader will
-/// not animate.
-///
-/// This value can be changed at runtime and will affect all currently
-/// open terminals.
+            r#" If true (default), the focused terminal surface will run an animation
+ loop when custom shaders are used. This uses slightly more CPU (generally
+ less than 10%) but allows the shader to animate. This only runs if there
+ are custom shaders.
+
+ If this is set to false, the terminal and custom shader will only render
+ when the terminal is updated. This is more efficient but the shader will
+ not animate.
+
+ This value can be changed at runtime and will affect all currently
+ open terminals.
 "#.to_string()
         }
         "macos-non-native-fullscren" => {
-            r#"/// If anything other than false, fullscreen mode on macOS will not use the
-/// native fullscreen, but make the window fullscreen without animations and
-/// using a new space. It's faster than the native fullscreen mode since it
-/// doesn't use animations.
-///
-/// Allowable values are:
-///
-///   * "visible-menu" - Use non-native macOS fullscreen, keep the menu bar visible
-///   * "true" - Use non-native macOS fullscreen, hide the menu bar
-///   * "false" - Use native macOS fullscreeen
+            r#" If anything other than false, fullscreen mode on macOS will not use the
+ native fullscreen, but make the window fullscreen without animations and
+ using a new space. It's faster than the native fullscreen mode since it
+ doesn't use animations.
+
+ Allowable values are:
+
+   * "visible-menu" - Use non-native macOS fullscreen, keep the menu bar visible
+   * "true" - Use non-native macOS fullscreen, hide the menu bar
+   * "false" - Use native macOS fullscreeen
 "#.to_string()
         }
         "macos-option-as-alt" => {
-            r#"/// If true, the Option key will be treated as Alt. This makes terminal
-/// sequences expecting Alt to work properly, but will break Unicode
-/// input sequences on macOS if you use them via the alt key. You may
-/// set this to false to restore the macOS alt-key unicode sequences
-/// but this will break terminal sequences expecting Alt to work.
-///
-/// Note that if an Option-sequence doesn't produce a printable
-/// character, it will be treated as Alt regardless of this setting.
-/// (i.e. alt+ctrl+a).
-///
-/// This does not work with GLFW builds.
+            r#" If true, the Option key will be treated as Alt. This makes terminal
+ sequences expecting Alt to work properly, but will break Unicode
+ input sequences on macOS if you use them via the alt key. You may
+ set this to false to restore the macOS alt-key unicode sequences
+ but this will break terminal sequences expecting Alt to work.
+
+ Note that if an Option-sequence doesn't produce a printable
+ character, it will be treated as Alt regardless of this setting.
+ (i.e. alt+ctrl+a).
+
+ This does not work with GLFW builds.
 "#.to_string()
         }
         "gtk-single-instance" => {
-            r#"/// If true, the Ghostty GTK application will run in single-instance mode:
-/// each new `ghostty` process launched will result in a new window if there
-/// is already a running process.
-///
-/// If false, each new ghostty process will launch a separate application.
-///
-/// The default value is "desktop" which will default to "true" if Ghostty
-/// detects it was launched from the .desktop file such as an app launcher.
-/// If Ghostty is launched from the command line, it will default to "false".
-///
-/// Note that debug builds of Ghostty have a separate single-instance ID
-/// so you can test single instance without conflicting with release builds.
+            r#" If true, the Ghostty GTK application will run in single-instance mode:
+ each new `ghostty` process launched will result in a new window if there
+ is already a running process.
+
+ If false, each new ghostty process will launch a separate application.
+
+ The default value is "desktop" which will default to "true" if Ghostty
+ detects it was launched from the .desktop file such as an app launcher.
+ If Ghostty is launched from the command line, it will default to "false".
+
+ Note that debug builds of Ghostty have a separate single-instance ID
+ so you can test single instance without conflicting with release builds.
 "#.to_string()
         }
         "gtk-wide-tabs" => {
-            r#"/// If true (default), then the Ghostty GTK tabs will be "wide." Wide tabs
-/// are the new typical Gnome style where tabs fill their available space.
-/// If you set this to false then tabs will only take up space they need,
-/// which is the old style.
+            r#" If true (default), then the Ghostty GTK tabs will be "wide." Wide tabs
+ are the new typical Gnome style where tabs fill their available space.
+ If you set this to false then tabs will only take up space they need,
+ which is the old style.
 "#.to_string()
         }
         "gtk-adwaita" => {
-            r#"/// If true (default), Ghostty will enable libadwaita theme support. This
-/// will make `window-theme` work properly and will also allow Ghostty to
-/// properly respond to system theme changes, light/dark mode changing, etc.
-/// This requires a GTK4 desktop with a GTK4 theme.
-///
-/// If you are running GTK3 or have a GTK3 theme, you may have to set this
-/// to false to get your theme picked up properly. Having this set to true
-/// with GTK3 should not cause any problems, but it may not work exactly as
-/// expected.
-///
-/// This configuration only has an effect if Ghostty was built with
-/// libadwaita support.
+            r#" If true (default), Ghostty will enable libadwaita theme support. This
+ will make `window-theme` work properly and will also allow Ghostty to
+ properly respond to system theme changes, light/dark mode changing, etc.
+ This requires a GTK4 desktop with a GTK4 theme.
+
+ If you are running GTK3 or have a GTK3 theme, you may have to set this
+ to false to get your theme picked up properly. Having this set to true
+ with GTK3 should not cause any problems, but it may not work exactly as
+ expected.
+
+ This configuration only has an effect if Ghostty was built with
+ libadwaita support.
 "#.to_string()
         }
         "desktop-notifications" => {
-            r#"/// If true (default), applications running in the terminal can show desktop
-/// notifications using certain escape sequences such as OSC 9 or OSC 777.
+            r#" If true (default), applications running in the terminal can show desktop
+ notifications using certain escape sequences such as OSC 9 or OSC 777.
 "#.to_string()
         }
 
