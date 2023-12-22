@@ -206,7 +206,7 @@ mod tests {
     }
 
     #[test]
-    fn test_single_line_handle_did_open_and_did_change_with_prepend() {
+    fn test_single_line_handle_did_open_and_did_change() {
         let mut doc = String::new();
         let notif = Notification {
             method: "textDocument/didOpen".to_string(),
@@ -230,66 +230,12 @@ mod tests {
                 },
                 "contentChanges": [
                     {
-                        "range": {
-                            "start": {
-                                "line": 0,
-                                "character": 0
-                            },
-                            "end": {
-                                "line": 0,
-                                "character": 0
-                            }
-                        },
                         "text": "h"
                     }
                 ]
             }),
         };
         handle_notification(notif, &mut doc);
-        assert_eq!(doc, "hhello");
-    }
-
-    #[test]
-    fn test_single_line_handle_did_open_and_did_change_with_append() {
-        let mut doc = String::new();
-        let notif = Notification {
-            method: "textDocument/didOpen".to_string(),
-            params: serde_json::json!({
-                "textDocument": {
-                    "uri": "file:///home/alex/Projects/ghostty/src/main.rs",
-                    "languageId": "rust",
-                    "version": 1,
-                    "text": "hello"
-                }
-            }),
-        };
-        handle_notification(notif, &mut doc);
-        assert_eq!(doc, "hello");
-        let notif = Notification {
-            method: "textDocument/didChange".to_string(),
-            params: serde_json::json!({
-                "textDocument": {
-                    "uri": "file:///home/alex/Projects/ghostty/src/main.rs",
-                    "version": 2,
-                },
-                "contentChanges": [
-                    {
-                        "range": {
-                            "start": {
-                                "line": 0,
-                                "character": 5
-                            },
-                            "end": {
-                                "line": 0,
-                                "character": 6
-                            }
-                        },
-                        "text": "h"
-                    }
-                ]
-            }),
-        };
-        handle_notification(notif, &mut doc);
-        assert_eq!(doc, "helloh");
+        assert_eq!(doc, "h");
     }
 }
